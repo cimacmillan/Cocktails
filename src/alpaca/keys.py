@@ -1,0 +1,5 @@
+ALPACA_URL = "https://paper-api.alpaca.markets"
+ALPACA_PUBLIC = "PKUDMLP075GYKO71YG9Q"
+ALPACA_SECRET = "0UZFhIjWfMyAxxZgfdUQCPOyUHRPfQIHSezPwKB3"
+
+

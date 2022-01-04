@@ -33,3 +33,8 @@ pip uninstall matplotlib  # or conda
 pip install matplotlib==3.2.2
 ```
 
+Alpaca API
+
+```
+pip install alpaca-trade-api
+```
