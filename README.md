@@ -37,4 +37,9 @@ Alpaca API
 
 ```
 pip install alpaca-trade-api
+pip install alpaca-backtrader-api
+pip install matplotlib==3.2.2
+
+pip install git+https://github.com/oanda/oandapy.git
+pip install git+https://github.com/happydasch/btoandav20
 ```
