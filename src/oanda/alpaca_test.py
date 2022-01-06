@@ -11,6 +11,8 @@ from backtrader.utils import flushfile  # win32 quick stdout flushing
 
 import btoandav20
 
+from src.config import getOandaKeys
+
 StoreCls = btoandav20.stores.OandaV20Store
 DataCls = btoandav20.feeds.OandaV20Data
 # BrokerCls = btoandav20.brokers.OandaV20Broker
@@ -178,9 +180,10 @@ class TestStrategy(bt.Strategy):
 
 
 def runstrategy():
+    account = getOandaKeys()
     args = parse_args([
-        "--token", "ef8448b9f6beaec9b62564eed2751cdc-dc8eb1b882022ff08afee8caf983060a",
-        "--account", "101-004-3812923-001",
+        "--token", account[1],
+        "--account", account[0],
         "--data0", "GBP_USD",
         "--timeframe", "Minutes",
         "--compression", "1",
