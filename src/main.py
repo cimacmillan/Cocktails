@@ -1,7 +1,7 @@
 # import util
-# import alpaca.client
-import alpaca.alpaca_test
-
+# import oanda.client
+# import oanda.alpaca_test
+import config
 
 print("hello world")
 
