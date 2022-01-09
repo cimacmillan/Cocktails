@@ -19,13 +19,16 @@ def backtestStrategy(strategy):
     cerebro = getBacktestCerebro()
     cerebro.addstrategy(strategy)
     cerebro.broker.setcash(100000.0)
-    cerebro.broker.setcommission(commission=0.001)
+    # cerebro.broker.setcommission(commission=0.001)
     print("Value before run", cerebro.broker.getvalue())
     cerebro.run()
     print("Value after run", cerebro.broker.getvalue())
+    cerebro.plot()
+
 
 print("hello world")
 
-# backtestStrategy(TestStrategy)
-executeStrategyLive(TestStrategy)
+
+backtestStrategy(TestStrategy)
+# executeStrategyLive(TestStrategy)
 

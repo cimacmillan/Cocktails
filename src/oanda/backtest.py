@@ -12,7 +12,7 @@ StoreCls = btoandav20.stores.OandaV20Store
 def getBacktestCerebro():
     [account, token] = getOandaKeys()
 
-    cerebro = bt.Cerebro()
+    cerebro = bt.Cerebro(oldbuysell=True)
 
     store = StoreCls(
         token=token,
@@ -28,7 +28,7 @@ def getBacktestCerebro():
     data0 = DataFactory(
         dataname=data0Label,
         timeframe=bt.TimeFrame.Minutes,
-        fromdate=datetime(2020, 12, 20),
+        fromdate=datetime(2022, 1, 1),
         historical=True,
     )
     cerebro.adddata(data0)
