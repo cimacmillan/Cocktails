@@ -15,20 +15,42 @@ def executeStrategyLive(strategy):
     cerebro.run(exactbars=1)
 
 
-def backtestStrategy(strategy):
+def backtestStrategy(strategy, params):
+    startingValue = 1000
     cerebro = getBacktestCerebro()
-    cerebro.addstrategy(strategy)
-    cerebro.broker.setcash(100000.0)
+    cerebro.addstrategy(strategy, **params)
+    cerebro.broker.setcash(startingValue)
     # cerebro.broker.setcommission(commission=0.001)
-    print("Value before run", cerebro.broker.getvalue())
+    # print("Value before run", cerebro.broker.getvalue())
     cerebro.run()
-    print("Value after run", cerebro.broker.getvalue())
-    cerebro.plot()
+    # print("Value after run", cerebro.broker.getvalue())
+    # cerebro.plot()
+    endingValue = cerebro.broker.getvalue()
+    percentageReturn = endingValue / startingValue
+    # print("Return for", params, " = ", percentageReturn)
+    return percentageReturn
 
+params = dict(
+    sma=2
+)
+percentageReturn = backtestStrategy(TestStrategy, params)
+print("Return for", params, " = ", percentageReturn)
 
-print("hello world")
+# print("hello world")
+# bestPercentage = None
+# bestIndex = None
+#
+# for i in range(1, 100):
+#     params = dict(
+#         sma=i
+#     )
+#     percentageReturn = backtestStrategy(TestStrategy, params)
+#     print("Return for", params, " = ", percentageReturn)
+#
+#     if bestPercentage is None or percentageReturn > bestPercentage:
+#         bestPercentage = percentageReturn
+#         bestIndex = i
+#         print("Best SMA ", i)
 
-
-backtestStrategy(TestStrategy)
 # executeStrategyLive(TestStrategy)
 

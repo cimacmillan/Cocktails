@@ -2,10 +2,13 @@ import backtrader as bt
 
 # Create a Stratey
 class TestStrategy(bt.Strategy):
+    params = (
+        ('sma', 160),
+    )
 
     def __init__(self):
-        self.shortSMA = bt.indicators.MovingAverageSimple(self.datas[0], period=1)
-        self.longSMA = bt.indicators.MovingAverageSimple(self.datas[0], period=160)
+        self.shortSMA = bt.indicators.MovingAverageSimple(self.datas[0], period=8)
+        self.longSMA = bt.indicators.MovingAverageSimple(self.datas[0], period=self.params.sma)
         self.shortGreater = None
 
 
@@ -21,7 +24,7 @@ class TestStrategy(bt.Strategy):
         # self.log('Close ' + str(self.datas[0].close[0]))
         # self.log('Short SMA ' + str(self.shortSMA[0]))
         # self.log('Long SMA ' + str(self.longSMA[0]))
-        volume = int(self.broker.getvalue())
+        volume = 10000
         if self.shortGreater is None:
             self.shortGreater = self.shortSMA[0] > self.longSMA[0]
         elif self.shortGreater is True and self.longSMA[0] > self.shortSMA[0]:
