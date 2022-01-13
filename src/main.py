@@ -1,10 +1,8 @@
 # import util
 # import oanda.client
 # import oanda.alpaca_test
-import config
 from oanda.live import getLiveCerebro
 from src.oanda.backtest import getBacktestCerebro
-from src.strategy.sample0 import SampleStrategy
 import backtrader as bt
 
 from src.strategy.sample1 import TestStrategy
@@ -20,7 +18,7 @@ def backtestStrategy(strategy, params):
     cerebro = getBacktestCerebro()
     cerebro.addstrategy(strategy, **params)
     cerebro.broker.setcash(startingValue)
-    # cerebro.broker.setcommission(commission=0.001)
+    cerebro.broker.setcommission(commission=0.0001)
     # print("Value before run", cerebro.broker.getvalue())
     cerebro.run()
     # print("Value after run", cerebro.broker.getvalue())

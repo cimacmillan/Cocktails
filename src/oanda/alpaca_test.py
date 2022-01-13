@@ -11,7 +11,7 @@ from backtrader.utils import flushfile  # win32 quick stdout flushing
 
 import btoandav20
 
-from src.config import getOandaKeys
+from ..config import getOandaKeys
 
 StoreCls = btoandav20.stores.OandaV20Store
 DataCls = btoandav20.feeds.OandaV20Data

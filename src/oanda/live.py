@@ -1,4 +1,4 @@
-from src.config import getOandaKeys
+from ..config import getOandaKeys
 import backtrader as bt
 import btoandav20
 

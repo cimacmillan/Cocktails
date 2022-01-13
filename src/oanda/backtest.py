@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.config import getOandaKeys
+from ..config import getOandaKeys
 import backtrader as bt
 import btoandav20
 
@@ -21,17 +21,11 @@ DataFactory = store.getdata
 data0 = DataFactory(
     dataname=data0Label,
     timeframe=bt.TimeFrame.Minutes,
-    fromdate=datetime(2022, 1, 6),
+    fromdate=datetime(2021, 8, 6),
     historical=True,
 )
 
 def getBacktestCerebro():
-
     cerebro = bt.Cerebro(oldbuysell=True)
-
-    # broker = store.getbroker()
-    # cerebro.setbroker(broker)
-
     cerebro.adddata(data0)
-
     return cerebro
