@@ -27,6 +27,16 @@ class TestStrategy(bt.Strategy):
         volume = 10000
         if self.shortGreater is None:
             self.shortGreater = self.shortSMA[0] > self.longSMA[0]
+            if self.shortGreater is True:
+                self.close()
+                self.buy(
+                    size=volume
+                )
+            elif self.shortGreater is False:
+                self.close()
+                self.sell(
+                    size=volume
+                )
         elif self.shortGreater is True and self.longSMA[0] > self.shortSMA[0]:
             self.close()
             self.sell(
@@ -44,7 +54,7 @@ class TestStrategy(bt.Strategy):
 
     def notify_trade(self, trade):
         brokerValue = "$" + str(self.broker.getvalue())
-        # self.log("Trade " + str(trade.price) + " " + brokerValue)
+        self.log("Trade " + str(trade.price) + " " + brokerValue)
         # print(self.broker.get_fundshares())
 
 

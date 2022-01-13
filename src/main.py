@@ -9,9 +9,9 @@ import backtrader as bt
 
 from src.strategy.sample1 import TestStrategy
 
-def executeStrategyLive(strategy):
+def executeStrategyLive(strategy, params):
     cerebro = getLiveCerebro()
-    cerebro.addstrategy(strategy)
+    cerebro.addstrategy(strategy, **params)
     cerebro.run(exactbars=1)
 
 
@@ -33,8 +33,8 @@ def backtestStrategy(strategy, params):
 params = dict(
     sma=2
 )
-percentageReturn = backtestStrategy(TestStrategy, params)
-print("Return for", params, " = ", percentageReturn)
+# percentageReturn = backtestStrategy(TestStrategy, params)
+# print("Return for", params, " = ", percentageReturn)
 
 # print("hello world")
 # bestPercentage = None
@@ -52,5 +52,5 @@ print("Return for", params, " = ", percentageReturn)
 #         bestIndex = i
 #         print("Best SMA ", i)
 
-# executeStrategyLive(TestStrategy)
+executeStrategyLive(TestStrategy, params)
 
