@@ -1,6 +1,7 @@
-from ..config import getOandaKeys
 import backtrader as bt
 import btoandav20
+
+from ..config import getOandaKeys
 
 data0Label = "GBP_USD"
 broker = True

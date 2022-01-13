@@ -1,7 +1,9 @@
+import os
+
 # import util
 # import oanda.client
 # import oanda.alpaca_test
-from oanda.live import getLiveCerebro
+from src.oanda.live import getLiveCerebro
 from src.oanda.backtest import getBacktestCerebro
 import backtrader as bt
 
