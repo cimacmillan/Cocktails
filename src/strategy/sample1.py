@@ -19,7 +19,7 @@ class TestStrategy(bt.Strategy):
         print(currentTime, text)
 
     wait = 0
-    inter = 20
+    inter = 1000
     def next(self):
         # Simply log the closing price of the series from the reference
         # self.log('Close ' + str(self.datas[0].close[0]))
