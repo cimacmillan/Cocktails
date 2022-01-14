@@ -1,1 +1,1 @@
-python3 main.py > output.txt &
+nohup python3 -u main.py > nohup.out &

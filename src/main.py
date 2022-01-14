@@ -33,8 +33,7 @@ def backtestStrategy(strategy, params):
 params = dict(
     sma=2
 )
-# percentageReturn = backtestStrategy(TestStrategy, params)
-# print("Return for", params, " = ", percentageReturn)
+
 
 # print("hello world")
 # bestPercentage = None
@@ -53,4 +52,7 @@ params = dict(
 #         print("Best SMA ", i)
 
 executeStrategyLive(TestStrategy, params)
+
+# percentageReturn = backtestStrategy(TestStrategy, params)
+# print("Return for", params, " = ", percentageReturn)
 
