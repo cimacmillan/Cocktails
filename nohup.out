@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/callum/Workplace/Cocktails/main.py", line 1, in <module>
+    import src.main
+  File "/Users/callum/Workplace/Cocktails/src/main.py", line 6, in <module>
+    from src.oanda.live import getLiveCerebro
+  File "/Users/callum/Workplace/Cocktails/src/oanda/live.py", line 1, in <module>
+    import backtrader as bt
+ModuleNotFoundError: No module named 'backtrader'

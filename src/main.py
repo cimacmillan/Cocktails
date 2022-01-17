@@ -1,13 +1,12 @@
 import os
+import sys
 
-# import util
-# import oanda.client
-# import oanda.alpaca_test
+import numpy as np
+
+from src.model.Neural import NeuralNetwork
 from src.oanda.live import getLiveCerebro
 from src.oanda.backtest import getBacktestCerebro
-import backtrader as bt
-
-from src.strategy.sample1 import TestStrategy
+from src.strategy.NeuralGradient import NeuralGradient
 
 def executeStrategyLive(strategy, params):
     cerebro = getLiveCerebro()
@@ -30,29 +29,27 @@ def backtestStrategy(strategy, params):
     # print("Return for", params, " = ", percentageReturn)
     return percentageReturn
 
+layers = [1, 1, 1]
+weights = np.matrix([
+    [1], [1]
+])
+activations = np.matrix([
+    [1], [1], [1]
+])
+
 params = dict(
-    sma=2
+    network=NeuralNetwork(layers, weights, activations)
 )
 
+print("Start with args", sys.argv)
 
-# print("hello world")
-# bestPercentage = None
-# bestIndex = None
-#
-# for i in range(1, 100):
-#     params = dict(
-#         sma=i
-#     )
-#     percentageReturn = backtestStrategy(TestStrategy, params)
-#     print("Return for", params, " = ", percentageReturn)
-#
-#     if bestPercentage is None or percentageReturn > bestPercentage:
-#         bestPercentage = percentageReturn
-#         bestIndex = i
-#         print("Best SMA ", i)
+LIVE = "live"
 
-executeStrategyLive(TestStrategy, params)
-
-# percentageReturn = backtestStrategy(TestStrategy, params)
-# print("Return for", params, " = ", percentageReturn)
+if sys.argv.__contains__(LIVE):
+    print("Executing live")
+    executeStrategyLive(NeuralGradient, params)
+else:
+    print("Executing backtest")
+    percentageReturn = backtestStrategy(NeuralGradient, params)
+    print("Return for", params, " = ", percentageReturn)
 

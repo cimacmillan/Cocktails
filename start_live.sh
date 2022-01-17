@@ -1,1 +1,1 @@
-nohup python3 -u main.py > nohup.out &
+nohup python3 -u main.py live > nohup.out &
