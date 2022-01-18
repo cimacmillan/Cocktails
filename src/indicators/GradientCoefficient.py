@@ -10,14 +10,15 @@ class GradientCoefficient(bt.Indicator):
         self.addminperiod(self.params.n)
 
     def next(self):
-        diff = (self.data[0] - self.data[-self.p.n]) / self.p.n
-        gradient = diff / self.p.n
+        diff = (self.data[0] - self.data[-self.p.n])
+        # print(diff)
+        gradient = diff
         theta = math.atan(gradient)
-        coefficient = math.sin(theta)
-        self.lines.gc[0] = coefficient
+        # coefficient = math.sin(theta)
+        self.lines.gc[0] = theta
 
-        if coefficient > 1:
-            print("Unexpected coefficient", coefficient)
+        # if coefficient > 1:
+        #     print("Unexpected coefficient", coefficient)
 
 
 

@@ -3,6 +3,7 @@ import sys
 
 import numpy as np
 
+from src.indicators.GradientCoefficient import GradientCoefficient
 from src.model.Neural import NeuralNetwork
 from src.oanda.live import getLiveCerebro
 from src.oanda.backtest import getBacktestCerebro
@@ -29,16 +30,30 @@ def backtestStrategy(strategy, params):
     # print("Return for", params, " = ", percentageReturn)
     return percentageReturn
 
-layers = [1, 1, 1]
-weights = np.matrix([
-    [1], [1]
-])
-activations = np.matrix([
-    [1], [1], [1]
-])
+layers = [8, 8, 1]
+weights = [
+    np.random.rand(8, 8) * 100,
+    np.random.rand(1, 8) * 100,
+]
+activations = [
+    np.random.rand(8) / 100, np.random.rand(1) / 100
+]
+
+def getIndicators(data):
+    return [
+        GradientCoefficient(data, n=1),
+        GradientCoefficient(data, n=2),
+        GradientCoefficient(data, n=3),
+        GradientCoefficient(data, n=5),
+        GradientCoefficient(data, n=8),
+        GradientCoefficient(data, n=13),
+        GradientCoefficient(data, n=21),
+        GradientCoefficient(data, n=34)
+    ]
 
 params = dict(
-    network=NeuralNetwork(layers, weights, activations)
+    network=NeuralNetwork(layers, weights, activations),
+    getIndicators=getIndicators
 )
 
 print("Start with args", sys.argv)
@@ -51,5 +66,5 @@ if sys.argv.__contains__(LIVE):
 else:
     print("Executing backtest")
     percentageReturn = backtestStrategy(NeuralGradient, params)
-    print("Return for", params, " = ", percentageReturn)
+    print("Return is", percentageReturn)
 
