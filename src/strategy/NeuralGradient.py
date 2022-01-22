@@ -5,7 +5,7 @@ import numpy as np
 from src.model.Neural import NeuralNetwork
 
 NEURAL_THRESHOLD = 0.5
-VOLUME = 10000
+VOLUME = 1000000
 
 class NeuralGradient(bt.Strategy):
     def __init__(self, network: NeuralNetwork, getIndicators):

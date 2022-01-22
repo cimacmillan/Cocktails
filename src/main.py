@@ -18,7 +18,7 @@ def executeStrategyLive(strategy, params):
 
 
 def backtestStrategy(strategy, params):
-    startingValue = 1000
+    startingValue = 100000
     cerebro = getBacktestCerebro()
     cerebro.addstrategy(strategy, **params)
     cerebro.broker.setcash(startingValue)
@@ -26,7 +26,7 @@ def backtestStrategy(strategy, params):
     # print("Value before run", cerebro.broker.getvalue())
     cerebro.run()
     # print("Value after run", cerebro.broker.getvalue())
-    # cerebro.plot()
+    cerebro.plot()
     endingValue = cerebro.broker.getvalue()
     percentageReturn = endingValue / startingValue
     # print("Return for", params, " = ", percentageReturn)
