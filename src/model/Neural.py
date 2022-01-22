@@ -9,7 +9,6 @@ class NeuralNetwork:
             lambda x: np.zeros(x),
             layers
         ))
-        print(self.values)
 
     def output(self, inputs):
         self.values[0] = inputs

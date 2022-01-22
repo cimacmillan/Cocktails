@@ -5,7 +5,7 @@ import numpy as np
 from src.model.Neural import NeuralNetwork
 
 NEURAL_THRESHOLD = 0.5
-VOLUME = 1000
+VOLUME = 10000
 
 class NeuralGradient(bt.Strategy):
     def __init__(self, network: NeuralNetwork, getIndicators):
@@ -47,7 +47,7 @@ class NeuralGradient(bt.Strategy):
 
     def notify_trade(self, trade):
         brokerValue = "$" + str(self.broker.getvalue())
-        self.log("Trade " + str(trade.price) + " " + brokerValue + " " + str(trade.size))
+        # self.log("Trade " + str(trade.price) + " " + brokerValue + " " + str(trade.size))
         # print(self.broker.get_fundshares())
 
 

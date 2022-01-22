@@ -22,6 +22,7 @@ data0 = DataFactory(
     dataname=data0Label,
     timeframe=bt.TimeFrame.Minutes,
     fromdate=datetime(2022, 1, 17),
+    todate=datetime(2022, 1, 18),
     historical=True,
 )
 
