@@ -1,15 +1,14 @@
-import os
 import sys
 from copy import deepcopy
 
-import numpy
+import backtrader
 import numpy as np
 
-from src.indicators.GradientCoefficient import GradientCoefficient
-from src.model.Neural import NeuralNetwork
+from src.model.NeuralIndicators import MODELS
+from src.model.NeuralNetworkFactory import saveNetwork, loadNetwork, createRandomNetwork
 from src.oanda.live import getLiveCerebro
-from src.oanda.backtest import getBacktestCerebro
-from src.strategy.NeuralGradient import NeuralGradient
+from src.oanda.factory import getBacktestCerebro
+from src.strategy.Neural import NeuralGradient
 
 def executeStrategyLive(strategy, params):
     cerebro = getLiveCerebro()
@@ -21,93 +20,54 @@ def backtestStrategy(strategy, params):
     startingValue = 100000
     cerebro = getBacktestCerebro()
     cerebro.addstrategy(strategy, **params)
+    cerebro.addanalyzer(backtrader.analyzers.TradeAnalyzer, _name = "trades")
     cerebro.broker.setcash(startingValue)
     cerebro.broker.setcommission(commission=0.0001)
     # print("Value before run", cerebro.broker.getvalue())
-    cerebro.run()
+    results = cerebro.run()
     # print("Value after run", cerebro.broker.getvalue())
-    cerebro.plot()
-    endingValue = cerebro.broker.getvalue()
+    # cerebro.plot()
+    endingValue = cerebro.broker.getcash()
     percentageReturn = endingValue / startingValue
     # print("Return for", params, " = ", percentageReturn)
-    return percentageReturn
-
-MODEL = [8, 8, 1]
-SAVE_DIR = "train/"
-
-def saveNetwork(title, network):
-    for x in range(len(network.weights)):
-        numpy.savetxt(SAVE_DIR + title + "weights" + str(x), network.weights[x])
-    for y in  range(len(network.activations)):
-        numpy.savetxt(SAVE_DIR + title + "activations" + str(y), network.activations[y])
-
-def loadNetwork(title):
-    layers = MODEL
-    weights = []
-    activations = []
-    for x in range(len(layers) - 1):
-        weights.append(numpy.loadtxt(SAVE_DIR + title + "weights" + str(x)))
-        activations.append(numpy.loadtxt(SAVE_DIR + title + "activations" + str(x)))
-
-    return NeuralNetwork(layers, weights, activations)
-
-def createRandomNetwork(layers):
-    weights = []
-    activations = []
-    for x in range(len(layers) - 1):
-        inputSize = layers[x]
-        outputSize = layers[x + 1]
-        weights.append(
-            (np.random.rand(outputSize, inputSize) - 0.5) * 100
-        )
-
-        activations.append(
-            (np.random.rand(layers[x + 1]) - 0.5) / 100
-        )
-
-    return NeuralNetwork(layers, weights, activations)
+    return (results[0].analyzers.getbyname("trades").get_analysis(), percentageReturn, cerebro)
 
 
-def getIndicators(data):
-    return [
-        GradientCoefficient(data, n=1),
-        GradientCoefficient(data, n=2),
-        GradientCoefficient(data, n=3),
-        GradientCoefficient(data, n=5),
-        GradientCoefficient(data, n=8),
-        GradientCoefficient(data, n=13),
-        GradientCoefficient(data, n=21),
-        GradientCoefficient(data, n=34)
-    ]
-
-
-def getNetworkScore(network):
+def getNetworkAnalysis(network, getIndicators):
     params = dict(
         network=network,
         getIndicators=getIndicators
     )
     return backtestStrategy(NeuralGradient, params)
 
+def getNetProfit(analysis):
+    try:
+        return analysis["pnl"]["net"]["total"]
+    except:
+        return 0
 
-def getOrderedCohort(cohort):
+
+def getOrderedCohort(cohort, getIndicators):
     result = []
     for network in cohort:
-        score = getNetworkScore(network)
+        (analysis, percentageReturn, _) = getNetworkAnalysis(network, getIndicators)
+        score = getNetProfit(analysis)
+        tradeCount = analysis["total"]["total"]
         result.append((score, network))
-        print("- Score: ", score)
-
+        # print(analysis)
+        print("- Score:", score, "- Trades", tradeCount, " - Profit:", getNetProfit(analysis))
     result.sort(key=lambda x: x[0], reverse=True)
     return result
 
 
-NEW_NETWORKS = 5
-MUTATED_NETWORKS = 5
+NEW_NETWORKS = 0
+MUTATED_NETWORKS = 10
 COPY_NETWORK = 5
 COHORT_SIZE = NEW_NETWORKS + MUTATED_NETWORKS + COPY_NETWORK + 1
-cohort = [createRandomNetwork(MODEL) for x in range(COHORT_SIZE)]
-WEIGHT_MUTATE_RATE = 1
-ACTIVATION_MUTATE_RATE = 1 / 100
-GENERATIONS = 100
+WEIGHT_MUTATE_RATE = 0.1
+ACTIVATION_MUTATE_RATE = 0.1
+GENERATIONS = 1000
+STAGNANT = 20
 
 def getMutatedNetwork(network):
     copy = deepcopy(network)
@@ -131,9 +91,33 @@ def getNewCohort(orderedCohort):
         newCohort.append(getMutatedNetwork(orderedCohort[x + 1][1]))
 
     for x in range(NEW_NETWORKS):
-        newCohort.append(createRandomNetwork(MODEL))
+        newCohort.append(createRandomNetwork(MODELS["test"]["layers"]))
 
     return newCohort
+
+def train(name):
+    previousScore = None
+    stagnantGenerations = 0
+    cohort = [createRandomNetwork(MODELS["test"]["layers"]) for x in range(COHORT_SIZE)]
+    for x in range(GENERATIONS):
+        orderedCohort = getOrderedCohort(cohort, MODELS["test"]["indicators"])
+        print("Generation ", x, " Best: ", orderedCohort[0][0])
+        saveNetwork(name + "_cache", orderedCohort[0][1])
+        cohort = getNewCohort(orderedCohort)
+        if previousScore is None:
+            previousScore = orderedCohort[0][0]
+        elif previousScore == orderedCohort[0][0]:
+            stagnantGenerations = stagnantGenerations + 1
+            if stagnantGenerations >= STAGNANT:
+                print("Finishing early from stagnation")
+                break
+        else:
+            stagnantGenerations = 0
+            previousScore = orderedCohort[0][0]
+
+    print("Best after ", GENERATIONS, " Generations")
+    saveNetwork(name, cohort[0])
+    print("Saved")
 
 print("Start with args", sys.argv)
 
@@ -143,28 +127,24 @@ TRAIN = "train"
 
 if sys.argv.__contains__(LIVE):
     print("Executing live")
-    network = loadNetwork("test")
+    network = loadNetwork("test", MODELS["test"]["layers"])
     params = dict(
         network=network,
-        getIndicators=getIndicators
+        getIndicators=MODELS["test"]["indicators"]
     )
     executeStrategyLive(NeuralGradient, params)
 elif sys.argv.__contains__(TRAIN):
-    for x in range(GENERATIONS):
-        orderedCohort = getOrderedCohort(cohort)
-        print("Generation ", x, " Best: ", orderedCohort[0][0])
-        cohort = getNewCohort(orderedCohort)
-
-    print("Best after ", GENERATIONS, " Generations")
-    saveNetwork("test", cohort[0])
-    print("Saved")
+    print("Executing train")
+    train("test")
 else:
     print("Executing backtest")
-    network = loadNetwork("test")
+    network = loadNetwork("test", MODELS["test"]["layers"])
     params = dict(
         network=network,
-        getIndicators=getIndicators
+        getIndicators=MODELS["test"]["indicators"]
     )
-    percentageReturn = backtestStrategy(NeuralGradient, params)
-    print("Return is", percentageReturn)
+    (analysis, percentageReturn, cerebro) = backtestStrategy(NeuralGradient, params)
+    print("Return is", percentageReturn, "Analysis is", analysis)
+    cerebro.plot()
+
 

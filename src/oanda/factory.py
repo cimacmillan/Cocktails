@@ -21,7 +21,7 @@ DataFactory = store.getdata
 data0 = DataFactory(
     dataname=data0Label,
     timeframe=bt.TimeFrame.Minutes,
-    fromdate=datetime(2022, 1, 16),
+    fromdate=datetime(2022, 1, 1),
     todate=datetime(2022, 1, 18),
     historical=True,
 )

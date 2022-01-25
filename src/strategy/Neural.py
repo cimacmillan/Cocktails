@@ -2,10 +2,10 @@ import backtrader as bt
 import numpy as np
 
 # Create a Stratey
-from src.model.Neural import NeuralNetwork
+from src.model.NeuralNetwork import NeuralNetwork
 
-NEURAL_THRESHOLD = 0.5
-VOLUME = 1000000
+NEURAL_THRESHOLD = 0
+VOLUME = 10000
 
 class NeuralGradient(bt.Strategy):
     def __init__(self, network: NeuralNetwork, getIndicators):

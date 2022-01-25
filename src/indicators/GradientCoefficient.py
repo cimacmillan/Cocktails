@@ -13,9 +13,10 @@ class GradientCoefficient(bt.Indicator):
         diff = (self.data[0] - self.data[-self.p.n])
         # print(diff)
         gradient = diff
-        theta = math.atan(gradient)
+        result = gradient * 1e4
+        # theta = math.atan(gradient)
         # coefficient = math.sin(theta)
-        self.lines.gc[0] = theta
+        self.lines.gc[0] = result
 
         # if coefficient > 1:
         #     print("Unexpected coefficient", coefficient)
