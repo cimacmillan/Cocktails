@@ -1,0 +1,99 @@
+/usr/local/anaconda3/envs/cocktails/bin/python /Users/callum/Workplace/Cocktails/src/main.py experiment
+['101-004-3812923-001', '1793afef36595e261f9bb97530dfb89b-596be92ff8d4a4009bd38161ea8b7666']
+Start with args ['/Users/callum/Workplace/Cocktails/src/main.py', 'experiment']
+Executing experiment
+- Score: -221.2482399999838 - Trades 183  - Profit: -221.2482399999838
+- Score: -184.18564999998333 - Trades 159  - Profit: -184.18564999998333
+- Score: -47.94606499999669 - Trades 31  - Profit: -47.94606499999669
+- Score: -12.27268000000125 - Trades 5  - Profit: -12.27268000000125
+- Score: -113.07463500000273 - Trades 73  - Profit: -113.07463500000273
+- Score: -41.113374999998726 - Trades 44  - Profit: -41.113374999998726
+Generation  0  Best:  -12.27268000000125
+Best after  1  Generations
+Saved
+- Score: -70.59448499999169 - Trades 63  - Profit: -70.59448499999169
+- Score: -103.36383999999974 - Trades 100  - Profit: -103.36383999999974
+- Score: -232.00508999999133 - Trades 196  - Profit: -232.00508999999133
+- Score: -207.4546549999882 - Trades 171  - Profit: -207.4546549999882
+- Score: -71.36039999999714 - Trades 61  - Profit: -71.36039999999714
+- Score: -264.1254000000078 - Trades 187  - Profit: -264.1254000000078
+Generation  0  Best:  -70.59448499999169
+Best after  1  Generations
+Saved
+- Score: 4.518454999999756 - Trades 3  - Profit: 4.518454999999756
+- Score: -220.829850000006 - Trades 142  - Profit: -220.829850000006
+- Score: -147.14332999999334 - Trades 131  - Profit: -147.14332999999334
+- Score: -52.577435000006275 - Trades 42  - Profit: -52.577435000006275
+- Score: -208.4789300000065 - Trades 125  - Profit: -208.4789300000065
+- Score: -219.63404000001296 - Trades 134  - Profit: -219.63404000001296
+Generation  0  Best:  4.518454999999756
+Best after  1  Generations
+Saved
+- Score: -42.75683000000351 - Trades 35  - Profit: -42.75683000000351
+- Score: -65.7321549999974 - Trades 65  - Profit: -65.7321549999974
+- Score: -235.4030300000175 - Trades 147  - Profit: -235.4030300000175
+- Score: -191.36321499998948 - Trades 140  - Profit: -191.36321499998948
+- Score: -220.99593500001947 - Trades 152  - Profit: -220.99593500001947
+- Score: -83.1587350000022 - Trades 58  - Profit: -83.1587350000022
+Generation  0  Best:  -42.75683000000351
+Best after  1  Generations
+Saved
+- Score: -27.778440000000977 - Trades 19  - Profit: -27.778440000000977
+- Score: -303.0723850000121 - Trades 200  - Profit: -303.0723850000121
+- Score: -148.0241600000014 - Trades 101  - Profit: -148.0241600000014
+- Score: -120.09582999999569 - Trades 103  - Profit: -120.09582999999569
+- Score: 7.3188150000003365 - Trades 3  - Profit: 7.3188150000003365
+- Score: 0 - Trades 1  - Profit: 0
+Generation  0  Best:  7.3188150000003365
+Best after  1  Generations
+Saved
+- Score: -460.8050200000089 - Trades 309  - Profit: -460.8050200000089
+- Score: -245.57716499999987 - Trades 181  - Profit: -245.57716499999987
+- Score: -382.9425899999747 - Trades 291  - Profit: -382.9425899999747
+- Score: -407.9131099999942 - Trades 293  - Profit: -407.9131099999942
+- Score: -367.43187000002 - Trades 233  - Profit: -367.43187000002
+- Score: -243.9218100000051 - Trades 190  - Profit: -243.9218100000051
+Generation  0  Best:  -243.9218100000051
+Best after  1  Generations
+Saved
+- Score: -171.72831499999626 - Trades 141  - Profit: -171.72831499999626
+- Score: -530.7220600000044 - Trades 388  - Profit: -530.7220600000044
+- Score: -292.7039700000075 - Trades 250  - Profit: -292.7039700000075
+- Score: -371.1716400000016 - Trades 268  - Profit: -371.1716400000016
+- Score: -411.88486999998463 - Trades 332  - Profit: -411.88486999998463
+- Score: -539.1337499999814 - Trades 396  - Profit: -539.1337499999814
+Generation  0  Best:  -171.72831499999626
+Best after  1  Generations
+Saved
+- Score: -331.6262399999996 - Trades 236  - Profit: -331.6262399999996
+- Score: -282.1191649999872 - Trades 215  - Profit: -282.1191649999872
+- Score: -314.45495500000703 - Trades 224  - Profit: -314.45495500000703
+- Score: -214.93540499999702 - Trades 179  - Profit: -214.93540499999702
+- Score: -285.13606999998217 - Trades 202  - Profit: -285.13606999998217
+- Score: -256.1839950000081 - Trades 214  - Profit: -256.1839950000081
+Generation  0  Best:  -214.93540499999702
+Best after  1  Generations
+Saved
+- Score: -320.85428499999335 - Trades 247  - Profit: -320.85428499999335
+- Score: -236.74501000000066 - Trades 214  - Profit: -236.74501000000066
+- Score: -365.61499999998847 - Trades 238  - Profit: -365.61499999998847
+- Score: -251.8922350000124 - Trades 181  - Profit: -251.8922350000124
+- Score: -431.5032049999946 - Trades 316  - Profit: -431.5032049999946
+- Score: -199.43590999998383 - Trades 169  - Profit: -199.43590999998383
+Generation  0  Best:  -199.43590999998383
+Best after  1  Generations
+Saved
+- Score: -308.3251300000092 - Trades 213  - Profit: -308.3251300000092
+- Score: -455.78914999999625 - Trades 373  - Profit: -455.78914999999625
+- Score: -182.46611499998122 - Trades 155  - Profit: -182.46611499998122
+- Score: -300.7057549999923 - Trades 231  - Profit: -300.7057549999923
+- Score: -260.3009799999829 - Trades 212  - Profit: -260.3009799999829
+- Score: -426.2562500000125 - Trades 310  - Profit: -426.2562500000125
+Generation  0  Best:  -182.46611499998122
+Best after  1  Generations
+Saved
+A Result ExperimentResult(scores=[-12.27268000000125, -70.59448499999169, 4.518454999999756, -42.75683000000351, 7.3188150000003365], overallScore=-22.757344999999273)
+B Result ExperimentResult(scores=[-243.9218100000051, -171.72831499999626, -214.93540499999702, -199.43590999998383, -182.46611499998122], overallScore=-202.4975109999927)
+A wins!
+
+Process finished with exit code 0

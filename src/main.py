@@ -1,11 +1,14 @@
 import sys
 from copy import deepcopy
+import random
+from statistics import mean
 
 import backtrader
 import numpy as np
 
-from src.model.NeuralIndicators import MODELS
+from src.model.ExperimentSet import ExperimentSet, EXPERIMENT_A, EXPERIMENT_B, SEEDS, ExperimentResult
 from src.model.NeuralNetworkFactory import saveNetwork, loadNetwork, createRandomNetwork
+from src.model.TrainSet import TrainSet, TrainResult
 from src.oanda.live import getLiveCerebro
 from src.oanda.factory import getBacktestCerebro
 from src.strategy.Neural import NeuralGradient
@@ -61,7 +64,7 @@ def getOrderedCohort(cohort, getIndicators):
 
 
 NEW_NETWORKS = 0
-MUTATED_NETWORKS = 10
+MUTATED_NETWORKS = 15
 COPY_NETWORK = 5
 COHORT_SIZE = NEW_NETWORKS + MUTATED_NETWORKS + COPY_NETWORK + 1
 WEIGHT_MUTATE_RATE = 0.1
@@ -82,7 +85,7 @@ def getMutatedNetwork(network):
         copy.activations[x] += randomActivations
     return copy
 
-def getNewCohort(orderedCohort):
+def getNewCohort(orderedCohort, trainSet):
     newCohort = [orderedCohort[0][1]]
     for x in range(MUTATED_NETWORKS):
         newCohort.append(getMutatedNetwork((orderedCohort[0][1])))
@@ -91,19 +94,19 @@ def getNewCohort(orderedCohort):
         newCohort.append(getMutatedNetwork(orderedCohort[x + 1][1]))
 
     for x in range(NEW_NETWORKS):
-        newCohort.append(createRandomNetwork(MODELS["test"]["layers"]))
+        newCohort.append(createRandomNetwork(trainSet.model.layers))
 
     return newCohort
 
-def train(name):
+def train(trainSet) -> TrainResult:
     previousScore = None
     stagnantGenerations = 0
-    cohort = [createRandomNetwork(MODELS["test"]["layers"]) for x in range(COHORT_SIZE)]
+    cohort = [createRandomNetwork(trainSet.model.layers) for x in range(COHORT_SIZE)]
     for x in range(GENERATIONS):
-        orderedCohort = getOrderedCohort(cohort, MODELS["test"]["indicators"])
-        print("Generation ", x, " Best: ", orderedCohort[0][0])
-        saveNetwork(name + "_cache", orderedCohort[0][1])
-        cohort = getNewCohort(orderedCohort)
+        orderedCohort = getOrderedCohort(cohort, trainSet.model.indicators)
+        print(trainSet.name, "Generation ", x, " Best: ", orderedCohort[0][0])
+        saveNetwork(trainSet.name + "_cache", orderedCohort[0][1])
+        cohort = getNewCohort(orderedCohort, trainSet)
         if previousScore is None:
             previousScore = orderedCohort[0][0]
         elif previousScore == orderedCohort[0][0]:
@@ -116,32 +119,69 @@ def train(name):
             previousScore = orderedCohort[0][0]
 
     print("Best after ", GENERATIONS, " Generations")
-    saveNetwork(name, cohort[0])
+    saveNetwork(trainSet.name, cohort[0])
     print("Saved")
+    return TrainResult(
+        score=previousScore
+    )
+
+def executeExperiment(a):
+    scores = []
+    for x in SEEDS:
+        random.seed(x)
+        np.random.seed(x)
+        trainResult = train(TrainSet(
+            model=a.model,
+            name=a.name + "_" + str(x),
+        ))
+        scores.append(trainResult.score)
+    return ExperimentResult(
+        scores=scores,
+        overallScore=mean(scores)
+    )
+
+
+def experiment(a, b):
+    aResult = executeExperiment(a)
+    bResult = executeExperiment(b)
+    print("A Result", aResult)
+    print("B Result", bResult)
+    if aResult.overallScore > bResult.overallScore:
+        print("A wins!")
+    else:
+        print("B wins!")
+
 
 print("Start with args", sys.argv)
 
 LIVE = "live"
 TRAIN = "train"
+EXPERIMENT = "experiment"
 
 
 if sys.argv.__contains__(LIVE):
     print("Executing live")
-    network = loadNetwork("test", MODELS["test"]["layers"])
+    network = loadNetwork("test", EXPERIMENT_A.model.layers)
     params = dict(
         network=network,
-        getIndicators=MODELS["test"]["indicators"]
+        getIndicators=EXPERIMENT_A.model.indicators
     )
     executeStrategyLive(NeuralGradient, params)
 elif sys.argv.__contains__(TRAIN):
     print("Executing train")
-    train("test")
+    train(TrainSet(
+        model=EXPERIMENT_A.model,
+        name="Train"
+    ))
+elif sys.argv.__contains__(EXPERIMENT):
+    print("Executing experiment")
+    experiment(EXPERIMENT_A, EXPERIMENT_B)
 else:
     print("Executing backtest")
-    network = loadNetwork("test", MODELS["test"]["layers"])
+    network = loadNetwork("test", EXPERIMENT_A.model.layers)
     params = dict(
         network=network,
-        getIndicators=MODELS["test"]["indicators"]
+        getIndicators=EXPERIMENT_A.model.indicators
     )
     (analysis, percentageReturn, cerebro) = backtestStrategy(NeuralGradient, params)
     print("Return is", percentageReturn, "Analysis is", analysis)
