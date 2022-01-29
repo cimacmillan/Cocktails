@@ -30,18 +30,10 @@ def backtestStrategy(strategy, params):
     results = cerebro.run()
     # print("Value after run", cerebro.broker.getvalue())
     # cerebro.plot()
-    endingValue = cerebro.broker.getcash()
-    percentageReturn = endingValue / startingValue
+    endingValue = cerebro.broker.getvalue()
+    percentageReturn = endingValue
     # print("Return for", params, " = ", percentageReturn)
     return (results[0].analyzers.getbyname("trades").get_analysis(), percentageReturn, cerebro)
-
-
-def getNetworkAnalysis(network, getIndicators):
-    params = dict(
-        network=network,
-        getIndicators=getIndicators
-    )
-    return backtestStrategy(NeuralGradient, params)
 
 def getNetProfit(analysis):
     try:
@@ -53,8 +45,12 @@ def getNetProfit(analysis):
 def getOrderedCohort(cohort, getIndicators):
     result = []
     for network in cohort:
-        (analysis, percentageReturn, _) = getNetworkAnalysis(network, getIndicators)
-        score = getNetProfit(analysis)
+        params = dict(
+            network=network,
+            getIndicators=getIndicators
+        )
+        (analysis, percentageReturn, _) = backtestStrategy(NeuralGradient, params)
+        score = percentageReturn
         tradeCount = analysis["total"]["total"]
         result.append((score, network))
         # print(analysis)
