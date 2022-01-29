@@ -1,4 +1,5 @@
 import sys
+import threading
 from copy import deepcopy
 import random
 from statistics import mean
@@ -60,49 +61,64 @@ def getOrderedCohort(cohort, getIndicators):
 
 
 NEW_NETWORKS = 0
-MUTATED_NETWORKS = 15
-COPY_NETWORK = 5
+MUTATED_NETWORKS = 9
+COPY_NETWORK = 0
 COHORT_SIZE = NEW_NETWORKS + MUTATED_NETWORKS + COPY_NETWORK + 1
-WEIGHT_MUTATE_RATE = 0.1
+WEIGHT_MUTATE_RATE = 1
 ACTIVATION_MUTATE_RATE = 0.1
-GENERATIONS = 1000
+GENERATIONS = 20
 STAGNANT = 20
 
-def getMutatedNetwork(network):
+def getMutatedNetwork(random, network, trainSet, interpolation):
+    linearMutation = trainSet.linearMutation
     copy = deepcopy(network)
-    for x in range(len(copy.weights)):
-        weightMatrix = copy.weights[x]
-        randomWeights = (np.random.random(weightMatrix.shape) - 0.5) * WEIGHT_MUTATE_RATE
-        copy.weights[x] += randomWeights
+    if linearMutation:
+        antiInterp = 1 - interpolation
+        for x in range(len(copy.weights)):
+            weightMatrix = copy.weights[x]
+            randomWeights = (random.rand(*weightMatrix.shape) - 0.5) * 2 * WEIGHT_MUTATE_RATE
+            copy.weights[x] = (weightMatrix * antiInterp) + (randomWeights * interpolation)
 
-    for x in range(len(copy.activations)):
-        activationMatrix = copy.activations[x]
-        randomActivations = (np.random.random(activationMatrix.shape) - 0.5) * ACTIVATION_MUTATE_RATE
-        copy.activations[x] += randomActivations
+        for x in range(len(copy.activations)):
+            activationMatrix = copy.activations[x]
+            randomActivations = (random.rand(*activationMatrix.shape) - 0.5) * 2 * ACTIVATION_MUTATE_RATE
+            copy.activations[x] = (activationMatrix * antiInterp) + (randomActivations * interpolation)
+    else:
+        for x in range(len(copy.weights)):
+            weightMatrix = copy.weights[x]
+            randomWeights = (random.rand(*weightMatrix.shape) - 0.5) * WEIGHT_MUTATE_RATE
+            copy.weights[x] += randomWeights
+
+        for x in range(len(copy.activations)):
+            activationMatrix = copy.activations[x]
+            randomActivations = (random.rand(*activationMatrix.shape) - 0.5) * ACTIVATION_MUTATE_RATE
+            copy.activations[x] += randomActivations
     return copy
 
-def getNewCohort(orderedCohort, trainSet):
+def getNewCohort(random, orderedCohort, trainSet):
     newCohort = [orderedCohort[0][1]]
     for x in range(MUTATED_NETWORKS):
-        newCohort.append(getMutatedNetwork((orderedCohort[0][1])))
+        interp = x / MUTATED_NETWORKS
+        newCohort.append(getMutatedNetwork(random, orderedCohort[0][1], trainSet, interp))
 
     for x in range(COPY_NETWORK):
-        newCohort.append(getMutatedNetwork(orderedCohort[x + 1][1]))
+        interp = x / COPY_NETWORK
+        newCohort.append(getMutatedNetwork(random, orderedCohort[x + 1][1], trainSet, interp))
 
     for x in range(NEW_NETWORKS):
         newCohort.append(createRandomNetwork(trainSet.model.layers))
 
     return newCohort
 
-def train(trainSet) -> TrainResult:
+def train(trainSet, trainResult, random):
     previousScore = None
     stagnantGenerations = 0
-    cohort = [createRandomNetwork(trainSet.model.layers) for x in range(COHORT_SIZE)]
+    cohort = [createRandomNetwork(random, trainSet.model.layers) for x in range(COHORT_SIZE)]
     for x in range(GENERATIONS):
         orderedCohort = getOrderedCohort(cohort, trainSet.model.indicators)
         print(trainSet.name, "Generation ", x, " Best: ", orderedCohort[0][0])
         saveNetwork(trainSet.name + "_cache", orderedCohort[0][1])
-        cohort = getNewCohort(orderedCohort, trainSet)
+        cohort = getNewCohort(random, orderedCohort, trainSet)
         if previousScore is None:
             previousScore = orderedCohort[0][0]
         elif previousScore == orderedCohort[0][0]:
@@ -117,20 +133,38 @@ def train(trainSet) -> TrainResult:
     print("Best after ", GENERATIONS, " Generations")
     saveNetwork(trainSet.name, cohort[0])
     print("Saved")
-    return TrainResult(
-        score=previousScore
-    )
+    trainResult.score = previousScore
+    # # return TrainResult(
+    #     score=previousScore
+    # )
 
 def executeExperiment(a):
-    scores = []
+    results = []
+    threads = []
     for x in SEEDS:
-        random.seed(x)
-        np.random.seed(x)
-        trainResult = train(TrainSet(
+        rs = np.random.RandomState(x)
+        trainSet = TrainSet(
             model=a.model,
             name=a.name + "_" + str(x),
-        ))
-        scores.append(trainResult.score)
+            linearMutation=a.linearMutation
+        )
+        trainResult = TrainResult(score=-1)
+        x = threading.Thread(target=train, args=(trainSet, trainResult, rs))
+        threads.append(x)
+        results.append(trainResult)
+        x.start()
+        # trainResult = train(trainSet)
+        # scores.append(trainResult.score)
+
+    for x in threads:
+        x.join()
+
+
+    scores=[]
+
+    for x in results:
+        scores.append(x.score)
+
     return ExperimentResult(
         scores=scores,
         overallScore=mean(scores)

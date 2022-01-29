@@ -19,17 +19,17 @@ def loadNetwork(title, layers):
 
     return NeuralNetwork(layers, weights, activations)
 
-def createRandomNetwork(layers, weightScale = 1, activationScale = 1):
+def createRandomNetwork(random, layers, weightScale = 1, activationScale = 1):
     weights = []
     activations = []
     for x in range(len(layers) - 1):
         inputSize = layers[x]
         outputSize = layers[x + 1]
         weights.append(
-            (np.random.rand(outputSize, inputSize) - 0.5) * 2 * weightScale
+            (random.rand(outputSize, inputSize) - 0.5) * 2 * weightScale
         )
         activations.append(
-            (np.random.rand(layers[x + 1]) - 0.5) * 2 * activationScale
+            (random.rand(layers[x + 1]) - 0.5) * 2 * activationScale
         )
 
     return NeuralNetwork(layers, weights, activations)

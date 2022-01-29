@@ -18,15 +18,16 @@ store = StoreCls(
 
 DataFactory = store.getdata
 
-data0 = DataFactory(
-    dataname=data0Label,
-    timeframe=bt.TimeFrame.Minutes,
-    fromdate=datetime(2022, 1, 17),
-    todate=datetime(2022, 1, 18),
-    historical=True,
-)
+
 
 def getBacktestCerebro():
-    cerebro = bt.Cerebro(oldbuysell=True)
+    data0 = DataFactory(
+        dataname=data0Label,
+        timeframe=bt.TimeFrame.Minutes,
+        fromdate=datetime(2022, 1, 17),
+        todate=datetime(2022, 1, 18),
+        historical=True,
+    )
+    cerebro = bt.Cerebro(oldbuysell=True, maxcpus=None)
     cerebro.adddata(data0)
     return cerebro

@@ -6,6 +6,7 @@ from src.model import NeuralModel
 class TrainSet():
     name: str
     model: NeuralModel
+    linearMutation: bool
 
 @dataclass
 class TrainResult():
