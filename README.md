@@ -27,7 +27,7 @@ pip install git+https://github.com/happydasch/btoandav20
 
 ### Training
 
-The first model listed in the [experiments file](src/model/ExperimentSet.py) is selected for training. The model is optimised using a genetic algorithm for 1000 generations at a 1 month, minute interval backtest. This halts after 20 generations if fitness doesn't improve, and caches the best model of each generation. The trainer can be executed with this command:
+The first model listed in the [experiments file](src/model/ExperimentSet.py) is selected for training. The model is optimised using a genetic algorithm for 1000 generations at a 1 month, minute interval backtest. This halts after 20 generations if fitness doesn't improve. It caches the best model of each generation. The trainer can be executed with this command:
 
 ```commandline
 python3 -u main.py train
