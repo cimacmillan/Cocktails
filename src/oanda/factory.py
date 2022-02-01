@@ -24,8 +24,8 @@ def getBacktestCerebro():
     data0 = DataFactory(
         dataname=data0Label,
         timeframe=bt.TimeFrame.Minutes,
-        fromdate=datetime(2022, 1, 17),
-        todate=datetime(2022, 1, 18),
+        fromdate=datetime(2022, 1, 1),
+        todate=datetime(2022, 1, 30),
         historical=True,
     )
     cerebro = bt.Cerebro(oldbuysell=True, maxcpus=None)

@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 
+from backtrader.indicators import AccelerationDecelerationOscillator, AdaptiveMovingAverage, AroonDown, AroonOscillator, \
+    AwesomeOscillator
+
 from src.indicators.GradientCoefficient import GradientCoefficient
 from src.indicators.NormalisedSMA import NormalisedSMA
 from src.model.NeuralModel import NeuralModel
@@ -14,6 +17,7 @@ class ExperimentSet:
 class ExperimentResult:
     scores: [float]
     overallScore: float
+    name: str
 
 SEEDS = [
     170319,
@@ -23,38 +27,41 @@ SEEDS = [
     80820
 ]
 
-EXPERIMENT_A = ExperimentSet(
-    name="A",
-    model=NeuralModel(
-        layers=[8, 8, 1],
-        indicators=lambda data: [
-            GradientCoefficient(data, n=1),
-            GradientCoefficient(data, n=2),
-            GradientCoefficient(data, n=3),
-            GradientCoefficient(data, n=5),
-            GradientCoefficient(data, n=8),
-            GradientCoefficient(data, n=13),
-            GradientCoefficient(data, n=21),
-            GradientCoefficient(data, n=34)
-        ]
+EXPERIMENTS = [
+    ExperimentSet(
+        name="A",
+        model=NeuralModel(
+            layers=[9, 9, 1],
+            indicators=lambda data: [
+                AccelerationDecelerationOscillator(data),
+                NormalisedSMA(data, period=8),
+                NormalisedSMA(data, period=16),
+                NormalisedSMA(data, period=32),
+                AroonOscillator(data),
+                AwesomeOscillator(data),
+                GradientCoefficient(data, n=8),
+                GradientCoefficient(data, n=16),
+                GradientCoefficient(data, n=32),
+            ]
+        ),
+        linearMutation=True
     ),
-    linearMutation=True
-)
-
-EXPERIMENT_B = ExperimentSet(
-    name="B",
-    model=NeuralModel(
-        layers=[8, 8, 1],
-        indicators=lambda data : [
-            GradientCoefficient(data, n=1),
-            GradientCoefficient(data, n=2),
-            GradientCoefficient(data, n=3),
-            GradientCoefficient(data, n=5),
-            GradientCoefficient(data, n=8),
-            GradientCoefficient(data, n=13),
-            GradientCoefficient(data, n=21),
-            GradientCoefficient(data, n=34)
-        ]
-    ),
-    linearMutation=False
-)
+    ExperimentSet(
+        name="B",
+        model=NeuralModel(
+            layers=[9, 9, 1],
+            indicators=lambda data: [
+                AccelerationDecelerationOscillator(data),
+                NormalisedSMA(data, period=8),
+                NormalisedSMA(data, period=16),
+                NormalisedSMA(data, period=32),
+                AroonOscillator(data),
+                AwesomeOscillator(data),
+                GradientCoefficient(data, n=8),
+                GradientCoefficient(data, n=16),
+                GradientCoefficient(data, n=32),
+            ]
+        ),
+        linearMutation=True
+    )
+]

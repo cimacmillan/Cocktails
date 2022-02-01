@@ -7,7 +7,7 @@ from statistics import mean
 import backtrader
 import numpy as np
 
-from src.model.ExperimentSet import ExperimentSet, EXPERIMENT_A, EXPERIMENT_B, SEEDS, ExperimentResult
+from src.model.ExperimentSet import ExperimentSet, SEEDS, ExperimentResult, EXPERIMENTS
 from src.model.NeuralNetworkFactory import saveNetwork, loadNetwork, createRandomNetwork
 from src.model.TrainSet import TrainSet, TrainResult
 from src.oanda.live import getLiveCerebro
@@ -60,29 +60,32 @@ def getOrderedCohort(cohort, getIndicators):
     return result
 
 
-NEW_NETWORKS = 0
-MUTATED_NETWORKS = 9
-COPY_NETWORK = 0
+NEW_NETWORKS = 5
+MUTATED_NETWORKS = 15
+COPY_NETWORK = 5
 COHORT_SIZE = NEW_NETWORKS + MUTATED_NETWORKS + COPY_NETWORK + 1
-WEIGHT_MUTATE_RATE = 1
-ACTIVATION_MUTATE_RATE = 0.1
-GENERATIONS = 20
+WEIGHT_MUTATE_RATE = 0.5
+ACTIVATION_MUTATE_RATE = 0.05
+GENERATIONS = 1000
 STAGNANT = 20
 
 def getMutatedNetwork(random, network, trainSet, interpolation):
     linearMutation = trainSet.linearMutation
     copy = deepcopy(network)
     if linearMutation:
-        antiInterp = 1 - interpolation
+        weightInterp = interpolation * WEIGHT_MUTATE_RATE
+        weightAntiInterp = 1 - weightInterp
+        actInterp = interpolation * ACTIVATION_MUTATE_RATE
+        actAntiInterp = 1 - actInterp
         for x in range(len(copy.weights)):
             weightMatrix = copy.weights[x]
-            randomWeights = (random.rand(*weightMatrix.shape) - 0.5) * 2 * WEIGHT_MUTATE_RATE
-            copy.weights[x] = (weightMatrix * antiInterp) + (randomWeights * interpolation)
+            randomWeights = (random.rand(*weightMatrix.shape) - 0.5) * 2
+            copy.weights[x] = (weightMatrix * weightAntiInterp) + (randomWeights * weightInterp)
 
         for x in range(len(copy.activations)):
             activationMatrix = copy.activations[x]
-            randomActivations = (random.rand(*activationMatrix.shape) - 0.5) * 2 * ACTIVATION_MUTATE_RATE
-            copy.activations[x] = (activationMatrix * antiInterp) + (randomActivations * interpolation)
+            randomActivations = (random.rand(*activationMatrix.shape) - 0.5) * 2
+            copy.activations[x] = (activationMatrix * actAntiInterp) + (randomActivations * actInterp)
     else:
         for x in range(len(copy.weights)):
             weightMatrix = copy.weights[x]
@@ -106,7 +109,7 @@ def getNewCohort(random, orderedCohort, trainSet):
         newCohort.append(getMutatedNetwork(random, orderedCohort[x + 1][1], trainSet, interp))
 
     for x in range(NEW_NETWORKS):
-        newCohort.append(createRandomNetwork(trainSet.model.layers))
+        newCohort.append(createRandomNetwork(random, trainSet.model.layers))
 
     return newCohort
 
@@ -134,9 +137,6 @@ def train(trainSet, trainResult, random):
     saveNetwork(trainSet.name, cohort[0])
     print("Saved")
     trainResult.score = previousScore
-    # # return TrainResult(
-    #     score=previousScore
-    # )
 
 def executeExperiment(a):
     results = []
@@ -153,12 +153,9 @@ def executeExperiment(a):
         threads.append(x)
         results.append(trainResult)
         x.start()
-        # trainResult = train(trainSet)
-        # scores.append(trainResult.score)
 
     for x in threads:
         x.join()
-
 
     scores=[]
 
@@ -167,19 +164,20 @@ def executeExperiment(a):
 
     return ExperimentResult(
         scores=scores,
-        overallScore=mean(scores)
+        overallScore=mean(scores),
+        name=a.name
     )
 
 
-def experiment(a, b):
-    aResult = executeExperiment(a)
-    bResult = executeExperiment(b)
-    print("A Result", aResult)
-    print("B Result", bResult)
-    if aResult.overallScore > bResult.overallScore:
-        print("A wins!")
-    else:
-        print("B wins!")
+def experiment(experiments):
+    results = []
+    for experiment in experiments:
+        results.append(executeExperiment(experiment))
+
+    print("Results")
+    for result in results:
+        print(result)
+
 
 
 print("Start with args", sys.argv)
@@ -191,27 +189,31 @@ EXPERIMENT = "experiment"
 
 if sys.argv.__contains__(LIVE):
     print("Executing live")
-    network = loadNetwork("test", EXPERIMENT_A.model.layers)
+    network = loadNetwork("test", EXPERIMENTS[0].model.layers)
     params = dict(
         network=network,
-        getIndicators=EXPERIMENT_A.model.indicators
+        getIndicators=EXPERIMENTS[0].model.indicators
     )
     executeStrategyLive(NeuralGradient, params)
 elif sys.argv.__contains__(TRAIN):
     print("Executing train")
+    trainResult = TrainResult(
+        score=0
+    )
     train(TrainSet(
-        model=EXPERIMENT_A.model,
-        name="Train"
-    ))
+        model=EXPERIMENTS[0].model,
+        name="Train",
+        linearMutation=EXPERIMENTS[0].linearMutation
+    ), trainResult, np.random.RandomState())
 elif sys.argv.__contains__(EXPERIMENT):
     print("Executing experiment")
-    experiment(EXPERIMENT_A, EXPERIMENT_B)
+    experiment(EXPERIMENTS)
 else:
     print("Executing backtest")
-    network = loadNetwork("test", EXPERIMENT_A.model.layers)
+    network = loadNetwork("test", EXPERIMENTS[0].model.layers)
     params = dict(
         network=network,
-        getIndicators=EXPERIMENT_A.model.indicators
+        getIndicators=EXPERIMENTS[0].model.indicators
     )
     (analysis, percentageReturn, cerebro) = backtestStrategy(NeuralGradient, params)
     print("Return is", percentageReturn, "Analysis is", analysis)
