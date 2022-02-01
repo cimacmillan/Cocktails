@@ -1,6 +1,6 @@
 # Cocktails
 
-Cocktails was a 1-month project to write a trading strategy. It can train, backtest, experiment and execute a trained model live. The primary model used is a set of stochastic indicators that are weighted using a neural network, to produce a buy or sell decision of a set volume. The trainer then optimises the network using a genetic algorithm that reinforces well performing models against worse performing ones.
+Cocktails was a 1-month project to write a trading strategy trainer. It can train, backtest, experiment and execute a trained model live. The primary model used is a set of stochastic indicators that are weighted using a neural network, to produce a buy or sell decision of a set volume. The trainer then optimises the network using a genetic algorithm that reinforces well performing models against worse performing ones.
 
 ### Install
 
